@@ -9,6 +9,46 @@ var humidity_Span = document.getElementById('humidity');
 var uv_index_Span = document.getElementById('uv_index');
 var todayDate_Span = document.getElementById('today-date');
 var hasBeenClicked = false;
+var searchHistory = [];
+
+/* Format of previousCity Object
+var previousCity = {
+    city: (data.name) [{
+        primary: {
+            temperature1: data.main.temp + " °F",
+            windspeed1: data.wind.speed + " mph"
+            humidity1: data.main.humidity + "%"
+            UVindex1: uvData.current.uvi
+        },
+        fiveDay: {
+            temperature2: "Temp: " + gobblygook.list[i+1].main.temp + " °F"
+            windspeed2: "Wind Speed: " + gobblygook.list[i+1].wind.speed + " mph"
+            humidity2: "Humidity: " + gobblygook.list[i+1].main.humidity
+
+        }
+    }]
+}
+*/
+
+
+var previousCity = {
+    cityName: "",
+    city: [{
+        primary: {
+            temperature1: null,
+            windspeed1: null,
+            humidity1: null,
+            UVindex1: null
+        },
+        fiveDay: {
+            temperature2: null,
+            windspeed2: null,
+            humidity2: null,
+            UVindex2: null
+
+        }
+    }]
+}
 
 
 // Five Day Forecast:
@@ -16,6 +56,7 @@ function getFiveDayForecast (gobblygook) {
     for (i = 0; i < 5 ; i++) {
         // First Click
         if (!hasBeenClicked) {
+
             // Create Container
             var fiveDayContainer = document.createElement("div")
             fiveDayContainer.classList.add('five-day-forecast-description', 'col-3', 'mx-2', 'bg-secondary', 'bg-gradient', 'px-3', 'py-3', 'text-light')
@@ -49,8 +90,10 @@ function getFiveDayForecast (gobblygook) {
             humidityP.classList.add('humidityP')
             humidityP.innerHTML = "Humidity: " + gobblygook.list[i+1].main.humidity
             fiveDayContainer.appendChild(humidityP) 
+
             }
 
+            
         // Update Existing Forecast
         else {
             var appendedFiveDayContainer = document.getElementsByClassName('five-day-forecast-description')
@@ -113,37 +156,66 @@ searchButton.addEventListener('click', function getWeather () {
             fetch (queryURL_UVindex, {
                 method: 'GET'
             })
-                .then (function (uvResponse) {
+            .then (function (uvResponse) {
                     return uvResponse.json ();
-                })
-                .then (function (uvData) {
-                    console.log(uvData)
-                    uv_index_Span.textContent = uvData.current.uvi
-                    var removeHide = document.getElementById('weather-today')
-                    removeHide.classList.remove('hide')
-                })
-            
-            // Fetch 5 day forecast
-            let queryURL_5Day = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + apiKey_openWeather + "&units=imperial"
-            fetch (queryURL_5Day, {
-                method: 'GET'
             })
-            .then (function (FiveDayResponse) {
+            .then (function (uvData) {
+                console.log(uvData)
+                uv_index_Span.textContent = uvData.current.uvi
+                var removeHide = document.getElementById('weather-today')
+                removeHide.classList.remove('hide')
+                    
+                // Fetch 5 day forecast
+                let queryURL_5Day = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + apiKey_openWeather + "&units=imperial"
+                fetch (queryURL_5Day, {
+                    method: 'GET'
+                })
+               .then (function (FiveDayResponse) {
                     return FiveDayResponse.json();
-            })
-            .then (function (FiveDayResponseData) {
-                console.log("5Day Response Data:")
-                console.log(FiveDayResponseData)
-                getFiveDayForecast(FiveDayResponseData);
-                if (!hasBeenClicked)
-                    hasBeenClicked = true;
-                // for (i = 0; i < 5; i++) {
-                //     var forecast = document.querySelectorAll('.five-day-forecast')[i]
-                //     forecast.innerHTML =
-                //         "Temperature: " + FiveDayResponseData.list[i+1].main.temp
-                        
-                // }
-                return hasBeenClicked
+                })
+               .then (function (FiveDayResponseData) {
+                    console.log("ALL AVAILABLE Data:")
+                    console.log(FiveDayResponseData)
+                    console.log(data);
+                    console.log(uvData)
+                    getFiveDayForecast(FiveDayResponseData);
+                    // Push into Search History
+                    var previousCity = {
+                        cityName: (data.name),
+                        city: [{
+                            primary: {
+                                temperature1: data.main.temp + " °F",
+                                windspeed1: data.wind.speed + " mph",
+                                humidity1: data.main.humidity + "%",
+                                UVindex1: uvData.current.uvi,
+                            },
+                            fiveDay: {
+                                temperature2: FiveDayResponseData.list[i+1].main.temp + " °F",
+                                windspeed2: FiveDayResponseData.list[i+1].wind.speed + " mph",
+                                humidity2: FiveDayResponseData.list[i+1].main.humidity,
+                    
+                            }
+                        }]
+                    }
+                    searchHistory.push(previousCity)
+                    console.log('first click saved: ')
+                    console.log (searchHistory)
+                    
+                    // Create Search History Button
+                    var searchCol = document.getElementById('search')
+                    var pastSearchesContainer = document.createElement('div')
+                    pastSearchesContainer.classList.add('d-grid', 'gap-2') 
+                    searchCol.appendChild(pastSearchesContainer)
+                    var searchHistory_button = document.createElement('button')
+                    searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
+                    searchHistory_button.innerHTML = data.name
+                    pastSearchesContainer.appendChild(searchHistory_button)
+
+                    // Update First Click
+                    if (!hasBeenClicked)
+                        hasBeenClicked = true;                
+                    return hasBeenClicked
+                })
             })
         })
 
@@ -174,48 +246,65 @@ searchButton.addEventListener('click', function getWeather () {
                 fetch (queryURL_UVindex, {
                     method: 'GET'
                 })
-                    .then (function (uvResponse) {
-                        return uvResponse.json ();
-                    })
-                    .then (function (uvData) {
-                        console.log(uvData)
-                        uv_index_Span.textContent = uvData.current.uvi
-                    })
+                .then (function (uvResponse) {
+                    return uvResponse.json ();
+                })
+                .then (function (uvData) {
+                    console.log(uvData)
+                    uv_index_Span.textContent = uvData.current.uvi
+                    
                     let queryURL_5Day = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + apiKey_openWeather + "&units=imperial"
                     fetch (queryURL_5Day, {
                         method: 'GET'
                     })
                     .then (function (FiveDayResponse) {
-                            return FiveDayResponse.json();
+                        return FiveDayResponse.json();
                     })
                     .then (function (FiveDayResponseData) {
                         console.log("5Day Response Data:")
                         console.log(FiveDayResponseData)
                         getFiveDayForecast(FiveDayResponseData);
+
+                    // Push into Search History
+                    var previousCity = {
+                        cityName: (data.name),
+                        city: [{
+                            primary: {
+                                temperature1: data.main.temp + " °F",
+                                windspeed1: data.wind.speed + " mph",
+                                humidity1: data.main.humidity + "%",
+                                UVindex1: uvData.current.uvi,
+                            },
+                            fiveDay: {
+                                temperature2: FiveDayResponseData.list[i+1].main.temp + " °F",
+                                windspeed2: FiveDayResponseData.list[i+1].wind.speed + " mph",
+                                humidity2: FiveDayResponseData.list[i+1].main.humidity,                   
+                            }
+                        }]
+                    }
+                    searchHistory.push(previousCity)
+                    console.log('array updated with: ')
+                    console.log(previousCity)
+                    console.log("check array: ")
+                    console.log(searchHistory)
+
+                    // Create Search History Button
+                    var searchCol = document.getElementById('search')
+                    var pastSearchesContainer = document.createElement('div')
+                    pastSearchesContainer.classList.add('d-grid', 'gap-2') 
+                    searchCol.appendChild(pastSearchesContainer)
+                    var searchHistory_button = document.createElement('button')
+                    searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
+                    searchHistory_button.innerHTML = data.name
+                    pastSearchesContainer.appendChild(searchHistory_button)
+                    
+
                     })
+                })
             })
                 
     console.log("has been clicked end: " + hasBeenClicked)
         }
 })
 
-
-// Create text field for a single forecast
-function createForecast () {
-
-
-}
-
-/*             <p>
-                Temperature: <span id="temperature"></span>
-            </p>
-            <p>
-                Wind Speed: <span id="wind-speed"></span>    
-            </p>
-            <p>
-                Humidity: <span id="humidity"></span>
-            </p>
-            <p>
-                UV Index: <span id="uv_index"></span>
-            </p>
-*/
+// Create a 
