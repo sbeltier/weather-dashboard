@@ -1,3 +1,12 @@
+/*
+*****   KNOWN ISSUES:   *****
+********** Issue: When something is searched again, a duplicate button will show up
+********** Solution: need to add a condition that acknowledges that
+**********
+********** Issue:
+********** Solution:
+*/
+
 // Global Variables
 var apiKey_openWeather = "b0e84d44a46c2683563bd1954e6d5080";
 var searchButton = document.querySelector('.search-button');
@@ -10,6 +19,8 @@ var uv_index_Span = document.getElementById('uv_index');
 var todayDate_Span = document.getElementById('today-date');
 var hasBeenClicked = false;
 var searchHistory = [];
+var searchHistory_button_arr = [];
+var userInput = document.querySelector('input').value
 
 /* Format of previousCity Object
 var previousCity = {
@@ -96,7 +107,6 @@ function getFiveDayForecast (gobblygook) {
             
         // Update Existing Forecast
         else {
-            var appendedFiveDayContainer = document.getElementsByClassName('five-day-forecast-description')
             // Update Dates
             var appendedDateP = document.getElementsByClassName('dateP')
             var todaysDate_update = moment();
@@ -179,6 +189,7 @@ searchButton.addEventListener('click', function getWeather () {
                     console.log(data);
                     console.log(uvData)
                     getFiveDayForecast(FiveDayResponseData);
+                    
                     // Push into Search History
                     var previousCity = {
                         cityName: (data.name),
@@ -189,27 +200,87 @@ searchButton.addEventListener('click', function getWeather () {
                                 humidity1: data.main.humidity + "%",
                                 UVindex1: uvData.current.uvi,
                             },
-                            fiveDay: {
-                                temperature2: FiveDayResponseData.list[i+1].main.temp + " °F",
-                                windspeed2: FiveDayResponseData.list[i+1].wind.speed + " mph",
-                                humidity2: FiveDayResponseData.list[i+1].main.humidity,
-                    
-                            }
+                            fiveDay: [
+                                {
+                                    temperature2: FiveDayResponseData.list[0].main.temp + " °F",
+                                    windspeed2: FiveDayResponseData.list[0].wind.speed + " mph",
+                                    humidity2: FiveDayResponseData.list[0].main.humidity,
+                                },
+                                {
+                                    temperature2: FiveDayResponseData.list[1].main.temp + " °F",
+                                    windspeed2: FiveDayResponseData.list[1].wind.speed + " mph",
+                                    humidity2: FiveDayResponseData.list[1].main.humidity,
+                                },       
+                                {
+                                    temperature2: FiveDayResponseData.list[2].main.temp + " °F",
+                                    windspeed2: FiveDayResponseData.list[2].wind.speed + " mph",
+                                    humidity2: FiveDayResponseData.list[2].main.humidity,
+                                },     
+                                {
+                                    temperature2: FiveDayResponseData.list[3].main.temp + " °F",
+                                    windspeed2: FiveDayResponseData.list[3].wind.speed + " mph",
+                                    humidity2: FiveDayResponseData.list[3].main.humidity,
+                                },     
+                                {
+                                    temperature2: FiveDayResponseData.list[4].main.temp + " °F",
+                                    windspeed2: FiveDayResponseData.list[4].wind.speed + " mph",
+                                    humidity2: FiveDayResponseData.list[4].main.humidity,
+                                }                                                                                              
+                                
+                            ]
                         }]
                     }
                     searchHistory.push(previousCity)
                     console.log('first click saved: ')
                     console.log (searchHistory)
                     
-                    // Create Search History Button
+                    // Create First Search History Button
                     var searchCol = document.getElementById('search')
                     var pastSearchesContainer = document.createElement('div')
                     pastSearchesContainer.classList.add('d-grid', 'gap-2') 
                     searchCol.appendChild(pastSearchesContainer)
                     var searchHistory_button = document.createElement('button')
+                    searchHistory_button_arr.push(data.name)
+                    console.log(searchHistory_button_arr)
+                    console.log("Search history button array")
                     searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
                     searchHistory_button.innerHTML = data.name
                     pastSearchesContainer.appendChild(searchHistory_button)
+
+                    // Store in Local Storage
+                    localStorage.setItem("Weather Forecast", JSON.stringify(searchHistory))
+
+                    // Add Event Listener to Search History Button to refresh weather dashboard
+                    searchHistory_button.addEventListener('click', function (event){
+                        var searchHistory_arr = JSON.parse(localStorage.getItem("Weather Forecast"))
+                        JSON.stringify(searchHistory_arr)
+
+                        // Update Primary Forecast
+                        for (k = 0; k < searchHistory_arr.length; k++){
+                            if (searchHistory_button.innerHTML == searchHistory_arr[k].cityName) {
+                                console.log(searchHistory_arr.length)
+                                console.log("searchHistory_arr.length^")
+                                cityName_Span.innerHTML = searchHistory_arr[k].cityName
+                                temperature_Span.innerHTML = searchHistory_arr[k].city[0].primary.temperature1
+                                windSpeed_Span.innerHTML = searchHistory_arr[k].city[0].primary.windspeed1
+                                humidity_Span.innerHTML = searchHistory_arr[k].city[0].primary.humidity1
+                                uv_index_Span.innerHTML = searchHistory_arr[k].city[0].primary.UVindex1
+                               
+                            }
+                        }
+                        
+                        // Update FiveDay Forecast
+                        for (l = 0; l < searchHistory_arr.length; l++) {
+                            if (event.target.innerHTML == searchHistory_arr[l].cityName) {
+                                for (m = 0; m < 5; m++){
+                            document.getElementsByClassName('tempP')[m].innerHTML = "Temp: " + searchHistory_arr[l].city[0].fiveDay[m].temperature2
+                            document.getElementsByClassName('windP')[m].innerHTML = "Wind Speed: " + searchHistory_arr[l].city[0].fiveDay[m].windspeed2
+                            document.getElementsByClassName('humidityP')[m].innerHTML = "Humidity: " + searchHistory_arr[l].city[0].fiveDay[m].humidity2
+                                }
+                            }
+                        }
+                        
+                    })
 
                     // Update First Click
                     if (!hasBeenClicked)
@@ -220,6 +291,7 @@ searchButton.addEventListener('click', function getWeather () {
         })
 
     }
+    
     else {
         console.log('Initiate Update to Primary Weather Dashboard')
         var user_city = document.querySelector('input').value 
@@ -265,40 +337,108 @@ searchButton.addEventListener('click', function getWeather () {
                         console.log(FiveDayResponseData)
                         getFiveDayForecast(FiveDayResponseData);
 
-                    // Push into Search History
-                    var previousCity = {
-                        cityName: (data.name),
-                        city: [{
-                            primary: {
-                                temperature1: data.main.temp + " °F",
-                                windspeed1: data.wind.speed + " mph",
-                                humidity1: data.main.humidity + "%",
-                                UVindex1: uvData.current.uvi,
-                            },
-                            fiveDay: {
-                                temperature2: FiveDayResponseData.list[i+1].main.temp + " °F",
-                                windspeed2: FiveDayResponseData.list[i+1].wind.speed + " mph",
-                                humidity2: FiveDayResponseData.list[i+1].main.humidity,                   
+                        // Push into Search History
+                        var previousCity = {
+                            cityName: (data.name),
+                            city: [{
+                                primary: {
+                                    temperature1: data.main.temp + " °F",
+                                    windspeed1: data.wind.speed + " mph",
+                                    humidity1: data.main.humidity + "%",
+                                    UVindex1: uvData.current.uvi,
+                                },
+                                fiveDay: [
+                                    {
+                                        temperature2: FiveDayResponseData.list[0].main.temp + " °F",
+                                        windspeed2: FiveDayResponseData.list[0].wind.speed + " mph",
+                                        humidity2: FiveDayResponseData.list[0].main.humidity,
+                                    },
+                                    {
+                                        temperature2: FiveDayResponseData.list[1].main.temp + " °F",
+                                        windspeed2: FiveDayResponseData.list[1].wind.speed + " mph",
+                                        humidity2: FiveDayResponseData.list[1].main.humidity,
+                                    },       
+                                    {
+                                        temperature2: FiveDayResponseData.list[2].main.temp + " °F",
+                                        windspeed2: FiveDayResponseData.list[2].wind.speed + " mph",
+                                        humidity2: FiveDayResponseData.list[2].main.humidity,
+                                    },     
+                                    {
+                                        temperature2: FiveDayResponseData.list[3].main.temp + " °F",
+                                        windspeed2: FiveDayResponseData.list[3].wind.speed + " mph",
+                                        humidity2: FiveDayResponseData.list[3].main.humidity,
+                                    },     
+                                    {
+                                        temperature2: FiveDayResponseData.list[4].main.temp + " °F",
+                                        windspeed2: FiveDayResponseData.list[4].wind.speed + " mph",
+                                        humidity2: FiveDayResponseData.list[4].main.humidity,
+                                    }                                                                                              
+                                    
+                                ]
+                            }]
+                        }
+                        searchHistory.push(previousCity)
+                        console.log('array updated with: ')
+                        console.log(previousCity)
+                        console.log("check array: ")
+                        console.log(document.querySelector('input').value)
+
+                        // Create Search History Button **** NEED TO CHECK AGAIN
+                        if (!searchHistory_button_arr.includes(userInput)) {
+                            console.log("HELLO")
+                            var searchCol = document.getElementById('search')
+                            var pastSearchesContainer = document.createElement('div')
+                            pastSearchesContainer.classList.add('d-grid', 'gap-2') 
+                            searchCol.appendChild(pastSearchesContainer)
+                            var searchHistory_button = document.createElement('button')
+                            searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
+                            searchHistory_button.innerHTML = data.name
+                            searchHistory_button_arr.push(data.name)
+                            console.log("searchHistory_button_arr")
+                            console.log(searchHistory_button_arr)
+                            pastSearchesContainer.appendChild(searchHistory_button)
+                            
                             }
-                        }]
-                    }
-                    searchHistory.push(previousCity)
-                    console.log('array updated with: ')
-                    console.log(previousCity)
-                    console.log("check array: ")
-                    console.log(searchHistory)
+                                                
+                        
+                        // Store in Local Storage
+                        localStorage.setItem("Weather Forecast", JSON.stringify(searchHistory))
 
-                    // Create Search History Button
-                    var searchCol = document.getElementById('search')
-                    var pastSearchesContainer = document.createElement('div')
-                    pastSearchesContainer.classList.add('d-grid', 'gap-2') 
-                    searchCol.appendChild(pastSearchesContainer)
-                    var searchHistory_button = document.createElement('button')
-                    searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
-                    searchHistory_button.innerHTML = data.name
-                    pastSearchesContainer.appendChild(searchHistory_button)
+                        // Additional Searches after first - add Event Listener to Search History Button
+                        searchHistory_button.addEventListener('click', function (event){
+                            console.log("this is for the second search history button")
+                            var searchHistory_arr = JSON.parse(localStorage.getItem("Weather Forecast"))
+                            JSON.stringify(searchHistory_arr)
+
+                            
+                            // Update Primary Forecast
+                            for (k = 0; k < searchHistory_arr.length; k++){
+                                if (event.target.innerHTML == searchHistory_arr[k].cityName) {
+                                    cityName_Span.innerHTML = searchHistory_arr[k].cityName
+                                    temperature_Span.innerHTML = searchHistory_arr[k].city[0].primary.temperature1
+                                    windSpeed_Span.innerHTML = searchHistory_arr[k].city[0].primary.windspeed1
+                                    humidity_Span.innerHTML = searchHistory_arr[k].city[0].primary.humidity1
+                                    uv_index_Span.innerHTML = searchHistory_arr[k].city[0].primary.UVindex1
+                                
+                                }
+                            }
+                            
+
+                            // Update FiveDay Forecast
+                            for (l = 0; l < searchHistory_arr.length; l++) {
+                                if (event.target.innerHTML == searchHistory_arr[l].cityName) {
+                                    for (m = 0; m < 5; m++){
+                                document.getElementsByClassName('tempP')[m].innerHTML = "Temp: " + searchHistory_arr[l].city[0].fiveDay[m].temperature2
+                                document.getElementsByClassName('windP')[m].innerHTML = "Wind Speed: " + searchHistory_arr[l].city[0].fiveDay[m].windspeed2
+                                document.getElementsByClassName('humidityP')[m].innerHTML = "Humidity: " + searchHistory_arr[l].city[0].fiveDay[m].humidity2
+                                    }
+                                }
+                            }
+                            
+                        })                        
+
+
                     
-
                     })
                 })
             })
@@ -307,4 +447,3 @@ searchButton.addEventListener('click', function getWeather () {
         }
 })
 
-// Create a 
