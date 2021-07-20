@@ -142,7 +142,7 @@ searchButton.addEventListener('click', function getWeather () {
     console.log(hasBeenClicked)
     if (!hasBeenClicked) {
     console.log(hasBeenClicked)
-    var user_city = document.querySelector('input').value 
+    var user_city = document.querySelector('input').value.toUpperCase() 
     var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + user_city + "&appid=" + apiKey_openWeather + "&units=imperial"
         fetch(queryURL, {
             method: 'GET'
@@ -240,10 +240,11 @@ searchButton.addEventListener('click', function getWeather () {
                     pastSearchesContainer.classList.add('d-grid', 'gap-2') 
                     searchCol.appendChild(pastSearchesContainer)
                     var searchHistory_button = document.createElement('button')
-                    searchHistory_button_arr.push(data.name)
+                    searchHistory_button_arr.push(data.name.toUpperCase())
                     console.log(searchHistory_button_arr)
                     console.log("Search history button array")
                     searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
+                    
                     searchHistory_button.innerHTML = data.name
                     pastSearchesContainer.appendChild(searchHistory_button)
 
@@ -382,10 +383,13 @@ searchButton.addEventListener('click', function getWeather () {
                         console.log(previousCity)
                         console.log("check array: ")
                         console.log(document.querySelector('input').value)
-
+                        console.log("searchHistory_button_arr is:")
+                        console.log(searchHistory_button_arr)
+                        userInput = document.querySelector('input').value
                         // Create Search History Button **** NEED TO CHECK AGAIN
-                        if (!searchHistory_button_arr.includes(userInput)) {
+                        if (!searchHistory_button_arr.includes(userInput.toUpperCase())) {
                             console.log("HELLO")
+                            console.log(userInput)
                             var searchCol = document.getElementById('search')
                             var pastSearchesContainer = document.createElement('div')
                             pastSearchesContainer.classList.add('d-grid', 'gap-2') 
@@ -393,12 +397,15 @@ searchButton.addEventListener('click', function getWeather () {
                             var searchHistory_button = document.createElement('button')
                             searchHistory_button.classList.add('btn', 'btn-secondary', 'my-1', 'search-history-button')
                             searchHistory_button.innerHTML = data.name
-                            searchHistory_button_arr.push(data.name)
+                            searchHistory_button_arr.push(data.name.toUpperCase())
                             console.log("searchHistory_button_arr")
                             console.log(searchHistory_button_arr)
                             pastSearchesContainer.appendChild(searchHistory_button)
                             
                             }
+                        else {
+                            alert("Click on the gray " + data.name.toUpperCase() + " button to see the forecast again!")
+                        }
                                                 
                         
                         // Store in Local Storage
