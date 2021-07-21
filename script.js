@@ -73,6 +73,12 @@ function getFiveDayForecast (gobblygook) {
             fiveDayContainer.classList.add('five-day-forecast-description', 'col-3', 'mx-2', 'bg-secondary', 'bg-gradient', 'px-3', 'py-3', 'text-light')
             document.getElementById('five-day-forecast').appendChild(fiveDayContainer)
 
+            // Set Icons
+            var setIcon = document.createElement('img')
+            setIcon.classList.add('iconImg')
+            setIcon.setAttribute('src', ("https://openweathermap.org/img/w/" + gobblygook.list[i+1].weather[0].icon + ".png"))
+            fiveDayContainer.appendChild(setIcon)
+
             // Set Dates
             var todaysDate = moment();
             var tomorrow = moment(todaysDate).add((i+1), 'days')
@@ -107,6 +113,11 @@ function getFiveDayForecast (gobblygook) {
             
         // Update Existing Forecast
         else {
+
+            // Update Icons
+            appendedIconImg = document.getElementsByClassName('iconImg')
+            appendedIconImg[i].setAttribute('src', ("https://openweathermap.org/img/w/" + gobblygook.list[i+1].weather[0].icon + ".png"))
+
             // Update Dates
             var appendedDateP = document.getElementsByClassName('dateP')
             var todaysDate_update = moment();
@@ -136,7 +147,7 @@ function getFiveDayForecast (gobblygook) {
 
 
 
-// Add Event Listener
+// Add Event Listener to Search for a City button
 // Function getWeather requests city, temperature, wind speed, and humidity from openWeatherMap
 searchButton.addEventListener('click', function getWeather () {
     console.log(hasBeenClicked)
@@ -174,6 +185,48 @@ searchButton.addEventListener('click', function getWeather () {
                 uv_index_Span.textContent = uvData.current.uvi
                 var removeHide = document.getElementById('weather-today')
                 removeHide.classList.remove('hide')
+                
+                // Style UV Index 
+                console.log("style UV Index")
+
+                if (uvData.current.uvi < 3) {
+                    // UV Index is low
+                    uv_index_Span.setAttribute("style", "background-color: green; color: white; padding: 4px 4px 4px 4px;")
+                }
+                    // UV Index is moderate
+                if ((uvData.current.uvi >= 3)
+                    &&
+                    (uvData.current.uvi < 6)
+                    ){
+                        uv_index_Span.setAttribute("style", "background-color: yellow")
+                }
+                // UV Index is high
+                if ((uvData.current.uvi >= 6)
+                    &&
+                    (uvData.current.uvi < 8)
+                    ){
+                        uv_index_Span.setAttribute("style", "background-color: orange")
+                }
+                // UV Index is very high
+                if ((uvData.current.uvi >= 8)
+                    &&
+                    (uvData.current.uvi < 10)
+                    ){
+                        uv_index_Span.setAttribute("style", "background-color: red; color; white")
+                }
+                // UV Index is Extreme
+                if (uvData.current.uvi >= 11){
+                    uv_index_Span.setAttribute("style", "background-color: purple; color: white")
+                }
+
+
+
+                // Add Icon to Primary Weather
+                var primaryIcon = document.getElementById('primary-weather-icon')
+                primaryIcon.setAttribute("src", ("https://openweathermap.org/img/w/" + data.weather[0].icon + ".png"))
+                console.log("this is the icon array initializer")
+
+
                     
                 // Fetch 5 day forecast
                 let queryURL_5Day = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + apiKey_openWeather + "&units=imperial"
@@ -199,32 +252,42 @@ searchButton.addEventListener('click', function getWeather () {
                                 windspeed1: data.wind.speed + " mph",
                                 humidity1: data.main.humidity + "%",
                                 UVindex1: uvData.current.uvi,
+                                icon: data.weather[0].icon + ".png"
                             },
                             fiveDay: [
                                 {
                                     temperature2: FiveDayResponseData.list[0].main.temp + " °F",
                                     windspeed2: FiveDayResponseData.list[0].wind.speed + " mph",
                                     humidity2: FiveDayResponseData.list[0].main.humidity,
+                                    icon2: FiveDayResponseData.list[0].weather.icon + ".png"
                                 },
                                 {
                                     temperature2: FiveDayResponseData.list[1].main.temp + " °F",
                                     windspeed2: FiveDayResponseData.list[1].wind.speed + " mph",
                                     humidity2: FiveDayResponseData.list[1].main.humidity,
+                                    icon2: FiveDayResponseData.list[1].weather.icon + ".png"
+
                                 },       
                                 {
                                     temperature2: FiveDayResponseData.list[2].main.temp + " °F",
                                     windspeed2: FiveDayResponseData.list[2].wind.speed + " mph",
                                     humidity2: FiveDayResponseData.list[2].main.humidity,
+                                    icon2: FiveDayResponseData.list[2].weather.icon + ".png"
+
                                 },     
                                 {
                                     temperature2: FiveDayResponseData.list[3].main.temp + " °F",
                                     windspeed2: FiveDayResponseData.list[3].wind.speed + " mph",
                                     humidity2: FiveDayResponseData.list[3].main.humidity,
+                                    icon2: FiveDayResponseData.list[3].weather.icon + ".png"
+
                                 },     
                                 {
                                     temperature2: FiveDayResponseData.list[4].main.temp + " °F",
                                     windspeed2: FiveDayResponseData.list[4].wind.speed + " mph",
                                     humidity2: FiveDayResponseData.list[4].main.humidity,
+                                    icon2: FiveDayResponseData.list[0].weather.icon + ".png"
+
                                 }                                                                                              
                                 
                             ]
@@ -233,7 +296,8 @@ searchButton.addEventListener('click', function getWeather () {
                     searchHistory.push(previousCity)
                     console.log('first click saved: ')
                     console.log (searchHistory)
-                    
+                 
+                        
                     // Create First Search History Button
                     var searchCol = document.getElementById('search')
                     var pastSearchesContainer = document.createElement('div')
@@ -266,9 +330,50 @@ searchButton.addEventListener('click', function getWeather () {
                                 windSpeed_Span.innerHTML = searchHistory_arr[k].city[0].primary.windspeed1
                                 humidity_Span.innerHTML = searchHistory_arr[k].city[0].primary.humidity1
                                 uv_index_Span.innerHTML = searchHistory_arr[k].city[0].primary.UVindex1
+                                
+
+                            // Add Icon to Primary Weather
+                            var primaryIcon = document.getElementById('primary-weather-icon')
+                            primaryIcon.setAttribute("src", ("https://openweathermap.org/img/w/" + searchHistory_arr[k].city[0].primary.icon))
+                            console.log("Icon Number for the main dashboard is:" + searchHistory_arr[k].city[0].primary.icon)
+
+
+                                // Style UV Index 
+                                console.log("style UV Index")
+
+                                if (searchHistory_arr[k].city[0].primary.UVindex1 < 3) {
+                                    // UV Index is low
+                                    uv_index_Span.setAttribute("style", "background-color: green; color: white; padding: 4px 4px 4px 4px;")
+                                }
+                                    // UV Index is moderate
+                                if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 3)
+                                    &&
+                                    (searchHistory_arr[k].city[0].primary.UVindex1< 6)
+                                    ){
+                                        uv_index_Span.setAttribute("style", "background-color: yellow; padding: 4px 4px 4px 4px;")
+                                }
+                                // UV Index is high
+                                if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 6)
+                                    &&
+                                    (searchHistory_arr[k].city[0].primary.UVindex1 < 8)
+                                    ){
+                                        uv_index_Span.setAttribute("style", "background-color: orange; padding: 4px 4px 4px 4px;")
+                                }
+                                // UV Index is very high
+                                if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 8)
+                                    &&
+                                    (searchHistory_arr[k].city[0].primary.UVindex1 < 10)
+                                    ){
+                                        uv_index_Span.setAttribute("style", "background-color: red; color: white; padding: 4px 4px 4px 4px;")
+                                }
+                                // UV Index is Extreme
+                                if (searchHistory_arr[k].city[0].primary.UVindex1 >= 11){
+                                    uv_index_Span.setAttribute("style", "background-color: purple; color: white; padding: 4px 4px 4px 4px;")
+                                }
                                
                             }
                         }
+
                         
                         // Update FiveDay Forecast
                         for (l = 0; l < searchHistory_arr.length; l++) {
@@ -427,6 +532,11 @@ searchButton.addEventListener('click', function getWeather () {
                                     humidity_Span.innerHTML = searchHistory_arr[k].city[0].primary.humidity1
                                     uv_index_Span.innerHTML = searchHistory_arr[k].city[0].primary.UVindex1
                                 
+                                    // Add Icon to Primary Weather
+                                    var primaryIcon = document.getElementById('primary-weather-icon')
+                                    primaryIcon.setAttribute("src", ("https://openweathermap.org/img/w/" + searchHistory_arr[k].city[0].primary.icon))
+                                    console.log("Icon Number for day " + k + " is:" + searchHistory_arr[k].city[0].primary.icon)
+
                                 }
                             }
                             
