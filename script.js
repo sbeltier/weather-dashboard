@@ -154,7 +154,7 @@ searchButton.addEventListener('click', function getWeather () {
     if (!hasBeenClicked) {
     console.log(hasBeenClicked)
     var user_city = document.querySelector('input').value.toUpperCase() 
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + user_city + "&appid=" + apiKey_openWeather + "&units=imperial"
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + user_city + "&appid=" + apiKey_openWeather + "&units=imperial"
         fetch(queryURL, {
             method: 'GET'
         })
@@ -401,7 +401,7 @@ searchButton.addEventListener('click', function getWeather () {
     else {
         console.log('Initiate Update to Primary Weather Dashboard')
         var user_city = document.querySelector('input').value 
-        var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + user_city + "&appid=" + apiKey_openWeather + "&units=imperial"
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + user_city + "&appid=" + apiKey_openWeather + "&units=imperial"
             fetch(queryURL, {
                 method: 'GET'
             })
