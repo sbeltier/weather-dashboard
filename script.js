@@ -212,7 +212,7 @@ searchButton.addEventListener('click', function getWeather () {
                     &&
                     (uvData.current.uvi < 10)
                     ){
-                        uv_index_Span.setAttribute("style", "background-color: red; color; white")
+                        uv_index_Span.setAttribute("style", "background-color: red; color: white")
                 }
                 // UV Index is Extreme
                 if (uvData.current.uvi >= 11){
@@ -430,6 +430,38 @@ searchButton.addEventListener('click', function getWeather () {
                 .then (function (uvData) {
                     console.log(uvData)
                     uv_index_Span.textContent = uvData.current.uvi
+                    // Style UV Index 
+                    console.log("style UV Index")
+
+                    if (uvData.current.uvi < 3) {
+                        // UV Index is low
+                        uv_index_Span.setAttribute("style", "background-color: green; color: white; padding: 4px 4px 4px 4px;")
+                    }
+                        // UV Index is moderate
+                    if ((uvData.current.uvi >= 3)
+                        &&
+                        (uvData.current.uvi< 6)
+                        ){
+                            uv_index_Span.setAttribute("style", "background-color: yellow; padding: 4px 4px 4px 4px;")
+                    }
+                    // UV Index is high
+                    if ((uvData.current.uvi >= 6)
+                        &&
+                        (uvData.current.uvi < 8)
+                        ){
+                            uv_index_Span.setAttribute("style", "background-color: orange; padding: 4px 4px 4px 4px;")
+                    }
+                    // UV Index is very high
+                    if ((uvData.current.uvi >= 8)
+                        &&
+                        (uvData.current.uvi < 10)
+                        ){
+                            uv_index_Span.setAttribute("style", "background-color: red; color: white; padding: 4px 4px 4px 4px;")
+                    }
+                    // UV Index is Extreme
+                    if (uvData.current.uvi >= 11){
+                        uv_index_Span.setAttribute("style", "background-color: purple; color: white; padding: 4px 4px 4px 4px;")
+                    }                    
                     
                     let queryURL_5Day = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + apiKey_openWeather + "&units=imperial"
                     fetch (queryURL_5Day, {
@@ -531,7 +563,40 @@ searchButton.addEventListener('click', function getWeather () {
                                     windSpeed_Span.innerHTML = searchHistory_arr[k].city[0].primary.windspeed1
                                     humidity_Span.innerHTML = searchHistory_arr[k].city[0].primary.humidity1
                                     uv_index_Span.innerHTML = searchHistory_arr[k].city[0].primary.UVindex1
-                                
+
+                                    // Style UV Index 
+                                    console.log("style UV Index")
+
+                                    if (searchHistory_arr[k].city[0].primary.UVindex1 < 3) {
+                                        // UV Index is low
+                                        uv_index_Span.setAttribute("style", "background-color: green; color: white; padding: 4px 4px 4px 4px;")
+                                    }
+                                        // UV Index is moderate
+                                    if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 3)
+                                        &&
+                                        (searchHistory_arr[k].city[0].primary.UVindex1< 6)
+                                        ){
+                                            uv_index_Span.setAttribute("style", "background-color: yellow; padding: 4px 4px 4px 4px;")
+                                    }
+                                    // UV Index is high
+                                    if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 6)
+                                        &&
+                                        (searchHistory_arr[k].city[0].primary.UVindex1 < 8)
+                                        ){
+                                            uv_index_Span.setAttribute("style", "background-color: orange; padding: 4px 4px 4px 4px;")
+                                    }
+                                    // UV Index is very high
+                                    if ((searchHistory_arr[k].city[0].primary.UVindex1 >= 8)
+                                        &&
+                                        (searchHistory_arr[k].city[0].primary.UVindex1 < 10)
+                                        ){
+                                            uv_index_Span.setAttribute("style", "background-color: red; color: white; padding: 4px 4px 4px 4px;")
+                                    }
+                                    // UV Index is Extreme
+                                    if (searchHistory_arr[k].city[0].primary.UVindex1 >= 11){
+                                        uv_index_Span.setAttribute("style", "background-color: purple; color: white; padding: 4px 4px 4px 4px;")
+                                    }
+                                    
                                     // Add Icon to Primary Weather
                                     var primaryIcon = document.getElementById('primary-weather-icon')
                                     primaryIcon.setAttribute("src", ("https://openweathermap.org/img/w/" + searchHistory_arr[k].city[0].primary.icon))
