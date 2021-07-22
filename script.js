@@ -490,26 +490,31 @@ searchButton.addEventListener('click', function getWeather () {
                                         temperature2: FiveDayResponseData.list[0].main.temp + " °F",
                                         windspeed2: FiveDayResponseData.list[0].wind.speed + " mph",
                                         humidity2: FiveDayResponseData.list[0].main.humidity,
+                                        icon2: FiveDayResponseData.list[0].weather.icon + ".png"
                                     },
                                     {
                                         temperature2: FiveDayResponseData.list[1].main.temp + " °F",
                                         windspeed2: FiveDayResponseData.list[1].wind.speed + " mph",
                                         humidity2: FiveDayResponseData.list[1].main.humidity,
+                                        icon2: FiveDayResponseData.list[1].weather.icon + ".png"
                                     },       
                                     {
                                         temperature2: FiveDayResponseData.list[2].main.temp + " °F",
                                         windspeed2: FiveDayResponseData.list[2].wind.speed + " mph",
                                         humidity2: FiveDayResponseData.list[2].main.humidity,
+                                        icon2: FiveDayResponseData.list[2].weather.icon + ".png"
                                     },     
                                     {
                                         temperature2: FiveDayResponseData.list[3].main.temp + " °F",
                                         windspeed2: FiveDayResponseData.list[3].wind.speed + " mph",
                                         humidity2: FiveDayResponseData.list[3].main.humidity,
+                                        icon2: FiveDayResponseData.list[3].weather.icon + ".png"
                                     },     
                                     {
                                         temperature2: FiveDayResponseData.list[4].main.temp + " °F",
                                         windspeed2: FiveDayResponseData.list[4].wind.speed + " mph",
                                         humidity2: FiveDayResponseData.list[4].main.humidity,
+                                        icon2: FiveDayResponseData.list[4].weather.icon + ".png"
                                     }                                                                                              
                                     
                                 ]
